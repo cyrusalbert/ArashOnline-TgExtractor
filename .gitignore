@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Downloaded proxy core + scratch files
+bin/
+tmp/
+
+# Secrets / local state - never commit these
+.env
+*.session
+*.session-journal
+
+# Logs
+*.log

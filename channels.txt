@@ -1,0 +1,9 @@
+# One Telegram channel per line. Accepted forms:
+#   channelname      @channelname      https://t.me/channelname      https://t.me/s/channelname
+# Lines starting with # are comments; blank lines are ignored.
+# The channel must have its public web preview enabled (open https://t.me/s/<name> in a browser to check).
+#
+# Replace the placeholders below with the channels you actually want to read:
+#
+# some_public_channel
+# another_channel

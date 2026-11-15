@@ -1,0 +1,112 @@
+# =============================================================================
+#  config.yaml - every tunable setting lives here
+# =============================================================================
+#  * Missing keys fall back to built-in defaults (see src/config.py).
+#  * The `profiles:` block at the bottom is overlaid on top of the base values:
+#      - "ci"    is used by the GitHub Actions workflow
+#      - "local" is used by run_local.py / run_local.bat / run_local.sh
+#  * Any value can also be overridden from the environment without editing this
+#    file:  V2S__<section>__<key>=<value>   (nested keys use more "__")
+#    e.g.   V2S__testing__max_configs=200   V2S__testing__speed__enabled=false
+# =============================================================================
+
+channels_file: channels.txt        # one channel per line (see that file)
+
+# ---------------------------------------------------------------- scraping ---
+scraper:
+  mode: web                        # web     = public preview t.me/s/<channel>, no login
+                                   # telethon = real Telegram API (needs credentials, see README)
+                                   # both    = web first, then Telethon for extra coverage
+  messages_per_channel: 100        # newest N messages read from every channel
+  base_url: "https://t.me/s"      # change only if you use a mirror / reverse proxy
+  request_timeout: 20              # seconds per HTTP request
+  retries: 3                       # per page, with back-off
+  delay_between_requests: 1.0      # politeness delay between pages (seconds)
+  max_pages_per_channel: 15        # hard stop for pagination (each page ~20 messages)
+  proxy: ""                        # optional proxy to reach t.me, e.g. "socks5h://127.0.0.1:10808"
+                                   # (socks needs: pip install "requests[socks]")
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+
+# ----------------------------------------------------------------- parsing ---
+parser:
+  max_link_length: 4096            # longer candidates are discarded
+
+# ------------------------------------------------------- proxy core binary ---
+core:
+  path: ""                         # explicit path to a sing-box binary (optional)
+  version: latest                  # "latest" or a pinned version such as "1.12.4"
+  fallback_version: "1.12.4"       # used when the GitHub API cannot be reached
+  bin_dir: bin                     # where the binary is cached (git-ignored)
+
+# ----------------------------------------------------------------- testing ---
+testing:
+  max_configs: 600                 # cap on configs tested per run (round-robin across channels)
+  concurrency: 40                  # parallel ping/geo tests (one core process each)
+  speed_concurrency: 3             # parallel speed tests - keep LOW or they fight for bandwidth
+  startup_timeout: 6               # seconds to wait for a core process to open its local port
+  max_runtime_minutes: 0           # 0 = unlimited. Budget for the whole test stage; when it
+                                   # runs out, remaining configs are skipped and results so far are kept.
+  ping:
+    url: "http://cp.cloudflare.com/generate_204"
+    expected_status: 204           # anything else (captive portals!) counts as a failure
+    warmup: 1                      # un-timed first request (also the liveness check)
+    attempts: 3                    # timed requests, averaged
+    min_success: 2                 # at least this many timed requests must succeed
+    timeout: 6                     # seconds per request
+    max_ping_ms: 3000              # slower than this = dropped
+  geo:
+    enabled: true
+    timeout: 8
+    providers: [ip-api, ipwho, ipinfo, country-is]   # tried in this order
+  speed:
+    enabled: true
+    urls:                          # tried in order until one works
+      - "https://speed.cloudflare.com/__down?bytes=10000000"
+      - "http://cachefly.cachefly.net/10mb.test"
+      - "https://proof.ovh.net/files/10Mb.dat"
+    timeout: 15                    # max seconds per download (partial downloads still count)
+    connect_timeout: 8
+    top_n: 150                     # only speed-test the N lowest-ping configs (0 = all alive)
+    min_mbps: 0                    # drop configs slower than this (0 = keep everything)
+    drop_on_fail: true             # alive but cannot download anything -> drop
+
+# ----------------------------------------------------------------- renaming ---
+rename:
+  # fields: {flag} {cc} {country} {ping} {speed} {rank} {protocol}
+  # {rank} is the position inside the list the link is written to.
+  template: "{flag} {cc} | {ping}ms | {speed}Mbps | #{rank:03d}"
+
+# ------------------------------------------------------------------- output ---
+output:
+  dir: "."                         # "." = repo root. Use e.g. "output" to keep the root tidy.
+  top_n: 0                         # keep only the best N per list (0 = all)
+  base64_subscriptions: true       # also write sub_ping_base64.txt / sub_speed_base64.txt
+  results_json: true               # also write results.json (full stats)
+  keep_old_if_empty: true          # if nothing works, keep the previous files instead of wiping them
+  commit_message: "chore: update configs ({utc})"   # used by run_local.py --push
+
+logging:
+  level: INFO                      # DEBUG | INFO | WARNING | ERROR
+  file: ""                         # optional log file path, e.g. "run.log"
+
+# ----------------------------------------------------------------- profiles ---
+profiles:
+  ci:                              # GitHub Actions runner: shared 2-4 vCPU, datacenter network
+    scraper:
+      messages_per_channel: 60
+    testing:
+      max_configs: 400
+      concurrency: 40
+      speed_concurrency: 3
+      max_runtime_minutes: 35
+      speed:
+        top_n: 100
+  local:                           # your own PC: real ISP, usually more headroom
+    scraper:
+      messages_per_channel: 200
+    testing:
+      max_configs: 3000
+      concurrency: 60
+      speed_concurrency: 4
+      speed:
+        top_n: 300
