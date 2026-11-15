@@ -70,16 +70,16 @@ Generated files (committed by the workflow): `raw_links.txt`, `sorted_by_ping.tx
 Your subscription URLs will be:
 
 ```
-https://raw.githubusercontent.com/cyrusalbert/ArashOnline-TgExtractor/sorted_by_ping.txt#TgExtractor-LowPing
+https://raw.githubusercontent.com/cyrusalbert/ArashOnline-TgExtractor/refs/heads/main/sorted_by_ping.txt#TgExtractor-LowPing
 ```
 ```
-https://raw.githubusercontent.com/cyrusalbert/ArashOnline-TgExtractor/sorted_by_speed.txt#TgExtractor-HighSpeed
+https://raw.githubusercontent.com/cyrusalbert/ArashOnline-TgExtractor/refs/heads/main/sorted_by_speed.txt#TgExtractor-HighSpeed
 ```
 ```
-https://raw.githubusercontent.com/cyrusalbert/ArashOnline-TgExtractor/sub_ping_base64.txt#TgExtractor-LowPing
+https://raw.githubusercontent.com/cyrusalbert/ArashOnline-TgExtractor/refs/heads/main/sub_ping_base64.txt#TgExtractor-LowPing
 ```
 ```
-https://raw.githubusercontent.com/cyrusalbert/ArashOnline-TgExtractor/sub_speed_base64.txt#TgExtractor-HighSpeed
+https://raw.githubusercontent.com/cyrusalbert/ArashOnline-TgExtractor/refs/heads/main/sub_speed_base64.txt#TgExtractor-HighSpeed
 ```
 
 Time limits: the job has a 60-minute hard stop, and the `ci` profile caps the test stage with
