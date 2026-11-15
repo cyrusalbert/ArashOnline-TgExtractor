@@ -22,7 +22,7 @@ scraper:
   request_timeout: 20              # seconds per HTTP request
   retries: 3                       # per page, with back-off
   delay_between_requests: 1.0      # politeness delay between pages (seconds)
-  max_pages_per_channel: 15        # hard stop for pagination (each page ~20 messages)
+  max_pages_per_channel: 50        # hard stop for pagination (each page ~20 messages)
   proxy: ""                        # optional proxy to reach t.me, e.g. "socks5h://127.0.0.1:10808"
                                    # (socks needs: pip install "requests[socks]")
   user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
