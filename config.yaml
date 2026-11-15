@@ -17,7 +17,7 @@ scraper:
   mode: web                        # web     = public preview t.me/s/<channel>, no login
                                    # telethon = real Telegram API (needs credentials, see README)
                                    # both    = web first, then Telethon for extra coverage
-  messages_per_channel: 500        # newest N messages read from every channel
+  messages_per_channel: 800        # newest N messages read from every channel
   base_url: "https://t.me/s"      # change only if you use a mirror / reverse proxy
   request_timeout: 20              # seconds per HTTP request
   retries: 3                       # per page, with back-off
@@ -93,7 +93,7 @@ logging:
 profiles:
   ci:                              # GitHub Actions runner: shared 2-4 vCPU, datacenter network
     scraper:
-      messages_per_channel: 60
+      messages_per_channel: 800
     testing:
       max_configs: 400
       concurrency: 40
